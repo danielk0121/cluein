@@ -9,7 +9,36 @@
 /.idea/assetWizardSettings.xml
 .DS_Store
 /build
+**/build/
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+
+# APK, AAB
+*.apk
+*.aab
+
+# Proguard
+*.pro
+
+# Keystore
+*.jks
+*.keystore
+keystore.properties
+
+# Lint
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# IntelliJ
+*.iws
+out/
+
+# Kotlin
+.kotlin/
