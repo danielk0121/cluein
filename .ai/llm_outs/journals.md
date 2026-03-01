@@ -26,3 +26,11 @@
   - 보안 정책 요약
   - 용어 정의
 
+## 2026-03-01T10:05:00+09:00
+
+**작업 내용**: CLAUDE.md 및 .claude/memory/MEMORY.md 설정
+
+- `~/.claude/projects/.../memory/MEMORY.md` → `.claude/memory/MEMORY.md` 로 이동
+- 프로젝트 루트에 `CLAUDE.md` 생성
+  - 세션 시작 시 `.claude/memory/MEMORY.md`, `.ai/prompts/` 파일 자동 참고 지시
+

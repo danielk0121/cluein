@@ -14,3 +14,5 @@ printf 'commit message\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.c
 - No HEREDOC
 - Supports multiline commit messages
 - Preserves Co-Authored-By tag
+
+**주의**: 명령어를 반드시 **한 줄**로 작성한다. 줄바꿈이 끼어들면 작은따옴표가 깨져서 `<`, `>` 가 리다이렉션으로 해석되어 입력 프롬프트가 뜬다.
