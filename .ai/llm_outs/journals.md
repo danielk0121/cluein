@@ -48,3 +48,28 @@
   - SCR-07. 이력 상세 화면: 전체 원문·보정 결과, 재보정 버튼
 - `todolist.md` 페이즈 02 완료([x]) 처리
 
+## 2026-03-01T10:32:17+09:00
+
+**작업 내용**: 페이즈 02-B SCR-01~07 Jetpack Compose 화면 구현
+
+- `gradle/libs.versions.toml` — `navigationCompose = "2.7.7"` 및 `androidx-navigation-compose` 라이브러리 항목 추가
+- `app/build.gradle.kts` — `implementation(libs.androidx.navigation.compose)` 의존성 추가
+- `Models.kt` 신규 생성
+  - `ConfidenceMarking`, `SourceItem`, `SourceType`, `CorrectionResult`, `HistoryItem` 데이터 클래스
+  - `DummyData` object — 더미 보정 결과 3건, 이력 3건
+- `NavGraph.kt` 신규 생성
+  - `Routes` object — HOME, MARKING, LOADING, RESULT, SOURCES, HISTORY, HISTORY_DETAIL 상수
+  - `ClueinNavGraph` — NavHost로 7개 라우트 연결
+- `Screens.kt` 신규 생성
+  - SCR-01 `HomeScreen`: 입력 필드, 마킹 버튼, 보정 시작 버튼, 최근 이력 3건
+  - SCR-02 `MarkingScreen`: 텍스트 + 마킹 목록 (더미)
+  - SCR-03 `LoadingScreen`: CircularProgressIndicator + LaunchedEffect 3초 후 Result 이동
+  - SCR-04 `ResultScreen`: 원문/보정 결과 카드 + 이유 + 출처 버튼
+  - SCR-05 `SourcesScreen`: LazyColumn 출처 카드 목록
+  - SCR-06 `HistoryScreen`: 날짜별 stickyHeader + HistoryCard 목록
+  - SCR-07 `HistoryDetailScreen`: 원문/결과 카드 + 출처/재보정 버튼
+  - 공통 Composable: `CorrectionCard`, `HistoryCard`, `SourceCard`
+- `MainActivity.kt` 수정 — Greeting 제거, NavController + ClueinNavGraph 연결
+- `./gradlew assembleDebug` 빌드 성공 확인 (경고: deprecated Divider/ArrowBack, 에러 없음)
+- `todolist.md` 페이즈 02-B 완료([x]) 처리
+

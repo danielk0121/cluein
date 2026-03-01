@@ -15,6 +15,15 @@
   - [x] SCR-06. 이력 목록 화면: 과거 보정 이력 리스트 (날짜, 입력 원문 요약, 보정 결과 요약)
   - [x] SCR-07. 이력 상세 화면: 선택한 이력의 전체 입력 원문, 보정 결과, 출처 재표시
 
+## 페이즈 02-B. 화면 구현 (Jetpack Compose)
+
+- [x] SCR-01~07 Compose 화면 구현
+  - [x] 의존성 추가 (navigation-compose 2.7.7)
+  - [x] Models.kt — 데이터 클래스 + 더미 데이터
+  - [x] NavGraph.kt — Routes + ClueinNavGraph
+  - [x] Screens.kt — SCR-01~07 전체 Composable
+  - [x] MainActivity.kt — NavController + ClueinNavGraph 연결
+
 ## 페이즈 03. 샘플 데이터 생성
 
 - [ ] 시나리오별 샘플 입력 데이터 작성
