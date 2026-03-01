@@ -1,4 +1,4 @@
-package dev.danielk.cluein
+package dev.danielk.cluein.data
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec

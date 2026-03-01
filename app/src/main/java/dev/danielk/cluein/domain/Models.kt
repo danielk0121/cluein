@@ -1,4 +1,4 @@
-package dev.danielk.cluein
+package dev.danielk.cluein.domain
 
 data class ConfidenceMarking(val start: Int, val end: Int, val text: String)
 

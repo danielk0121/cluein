@@ -1,7 +1,12 @@
-package dev.danielk.cluein
+package dev.danielk.cluein.data
 
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
+import dev.danielk.cluein.domain.GugeoEngine
+import dev.danielk.cluein.domain.GugeoRequest
+import dev.danielk.cluein.domain.GugeoResponse
+import dev.danielk.cluein.domain.SourceItem
+import dev.danielk.cluein.domain.SourceType
 import org.json.JSONObject
 
 /**

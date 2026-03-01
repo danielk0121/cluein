@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
+import dev.danielk.cluein.ui.ClueinNavGraph
 import dev.danielk.cluein.ui.theme.ClueinTheme
 
 class MainActivity : ComponentActivity() {

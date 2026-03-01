@@ -1,4 +1,4 @@
-package dev.danielk.cluein
+package dev.danielk.cluein.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dev.danielk.cluein.data.ApiKeyManager
 
 object Routes {
     const val API_KEY_SETUP = "api_key_setup"
@@ -48,7 +49,7 @@ fun ClueinNavGraph(navController: NavHostController = rememberNavController()) {
             SourcesScreen(navController, gugeoViewModel)
         }
         composable(Routes.HISTORY) {
-            HistoryScreen(navController)
+            HistoryScreen(navController, gugeoViewModel)
         }
         composable(Routes.HISTORY_DETAIL) { backStackEntry ->
             val historyId = backStackEntry.arguments?.getString("historyId") ?: ""

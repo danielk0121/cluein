@@ -38,20 +38,11 @@
 
 - [x] Gugeo Engine API 인터페이스 설계 (Google Gemini API 기반)
   - [x] GE-01. Gemini API 키 발급 및 연동 확인
-    - [x] GE-01-1. Google AI Studio 또는 Google Cloud Console에서 API 키 발급 (사용자 직접 발급 필요)
-    - [x] GE-01-2. 앱 최초 실행 시 사용자가 직접 API 키를 입력하는 UI 구현 (SCR-08)
-    - [x] GE-01-3. 입력된 키는 Android Keystore를 통해 암호화하여 런타임에만 사용 (ApiKeyManager.kt)
-    - [x] GE-01-4. 소스코드, DB, 파일(local.properties 등) 어디에도 키가 포함되지 않았는지 확인
-    - [x] GE-01-5. 입력된 키로 Gemini API 호출 성공 여부 확인 (더미 모드로 대체)
   - [x] GE-02. Gemini API 단순 텍스트 요청/응답 테스트 (더미 모드로 대체)
   - [x] GE-03. 기억 보정용 시스템 프롬프트 설계 → `.ai/assets/system_prompt.md`
-  - [x] GE-04. 입력 파싱 인터페이스 정의 (GugeoRequest) → `GugeoEngine.kt`
-  - [x] GE-05. 응답 파싱 인터페이스 정의 (GugeoResponse, GugeoEngine) → `GugeoEngine.kt`
+  - [x] GE-04. 입력 파싱 인터페이스 정의 (GugeoRequest) → `domain/GugeoEngine.kt`
+  - [x] GE-05. 응답 파싱 인터페이스 정의 (GugeoResponse, GugeoEngine) → `domain/GugeoEngine.kt`
   - [x] GE-06. 더미 API 응답 구현 (FakeGugeoEngine)
-    - [x] GE-06-1. GE-05 응답 구조체를 만족하는 더미 응답 데이터 3종 작성 (뉴스/영화/만델라 각 시나리오)
-    - [x] GE-06-2. FakeGugeoEngine 클래스 구현 — 키워드 매칭으로 더미 데이터 반환
-    - [x] GE-06-3. FakeGugeoEngine → GugeoViewModel → SCR-04 보정 결과 화면 연동
-    - [x] GE-06-4. FakeGugeoEngine → GugeoViewModel → SCR-05 출처/근거 화면 연동
   - [x] GE-07. Android 프로젝트에 Gemini SDK(google-generativeai) 의존성 추가
   - [x] GE-08. GugeoEngine 클래스 구현 및 Gemini API 호출 연동 (FakeGugeoEngine 교체)
   - [x] GE-09. 실제 시나리오(뉴스/영화/만델라)로 엔드투엔드 연동 테스트
@@ -63,9 +54,9 @@
 - [x] FR-03. Gugeo Engine 연동 (Google Gemini API 호출 및 추론 로직)
 - [x] FR-04. 보정 결과 화면 구현
 - [x] FR-05. 출처/근거 표시 UI 구현
-- [ ] FR-06. 보정 이력 저장 및 조회 구현
+- [x] FR-06. 보정 이력 저장 및 조회 구현 (Room DB 연동)
 
 ## 페이즈 06. 인프라/기타
 
-- [ ] 프로젝트 아키텍처 설계 (폴더 구조, 레이어 분리)
-- [ ] 의존성 최종 확인 및 빌드 검증
+- [x] 프로젝트 아키텍처 설계 (data, domain, ui 레이어 분리)
+- [x] 의존성 최종 확인 및 빌드 검증 (assembleDebug 성공)

@@ -1,4 +1,4 @@
-package dev.danielk.cluein
+package dev.danielk.cluein.domain
 
 // ─── GE-04. 입력 파싱 인터페이스 ─────────────────────────────────────────────
 

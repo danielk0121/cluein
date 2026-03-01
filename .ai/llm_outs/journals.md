@@ -148,3 +148,18 @@
 - `GE-09` 빌드 테스트 성공 (`./gradlew assembleDebug`)
 - `todolist.md` 페이즈 04 전체 및 페이즈 05 (FR-01~05) 완료([x]) 처리
 
+## 2026-03-01T12:30:00+09:00
+
+**작업 내용**: FR-06 보정 이력 저장 구현 및 Phase 06 아키텍처 개선
+
+- `Room` 및 `Gson` 라이브러리 의존성 추가
+- `data/Database.kt` (AppDatabase) 구현: `HistoryEntity`, `HistoryDao` 정의
+- `GugeoViewModel.kt` 수정: `HistoryDao`를 주입받아 보정 성공 시 이력을 DB에 저장하고, 저장된 이력을 UI용 `HistoryItem`으로 변환하여 노출하도록 구현
+- 아키텍처 개선 (패키지 구조 정리):
+  - `domain`: 엔티티 모델 및 엔진 인터페이스
+  - `data`: API 구현체, DB 관리, API 키 관리
+  - `ui`: ViewModel, Compose 화면, Navigation
+- 빌드 에러 수정: `Material3` `TextFieldDefaults` API 호환성 해결 및 Gradle 의존성 참조 오류 수정
+- `todolist.md` 전체 작업 완료([x]) 처리
+- `ANALYSIS.md`에 이전 작업 중단 원인 분석 결과 기록
+
