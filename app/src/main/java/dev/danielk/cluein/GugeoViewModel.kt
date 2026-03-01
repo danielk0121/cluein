@@ -1,6 +1,8 @@
 package dev.danielk.cluein
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,8 +15,7 @@ sealed class CorrectionState {
     data class Error(val message: String) : CorrectionState()
 }
 
-class GugeoViewModel : ViewModel() {
-    private val engine: GugeoEngine = FakeGugeoEngine()
+class GugeoViewModel(private val engine: GugeoEngine) : ViewModel() {
 
     private val _state = MutableStateFlow<CorrectionState>(CorrectionState.Idle)
     val state: StateFlow<CorrectionState> = _state
@@ -48,5 +49,21 @@ class GugeoViewModel : ViewModel() {
                 _state.value = CorrectionState.Error(e.message ?: "알 수 없는 오류")
             }
         }
+    }
+}
+
+class GugeoViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(GugeoViewModel::class.java)) {
+            val apiKey = ApiKeyManager.loadApiKey(context)
+            val engine = if (apiKey != null) {
+                GugeoEngineImpl(apiKey)
+            } else {
+                FakeGugeoEngine()
+            }
+            @Suppress("UNCHECKED_CAST")
+            return GugeoViewModel(engine) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

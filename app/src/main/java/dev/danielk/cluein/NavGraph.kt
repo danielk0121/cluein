@@ -24,7 +24,9 @@ object Routes {
 fun ClueinNavGraph(navController: NavHostController = rememberNavController()) {
     val context = LocalContext.current
     val startDest = if (ApiKeyManager.hasApiKey(context)) Routes.HOME else Routes.API_KEY_SETUP
-    val gugeoViewModel: GugeoViewModel = viewModel()
+    val gugeoViewModel: GugeoViewModel = viewModel(
+        factory = GugeoViewModelFactory(context)
+    )
 
     NavHost(navController = navController, startDestination = startDest) {
         composable(Routes.API_KEY_SETUP) {
