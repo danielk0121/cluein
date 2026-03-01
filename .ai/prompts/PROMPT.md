@@ -43,7 +43,6 @@
   2. read_file로 journals.md 마지막 내용 확인
   3. replace 도구로 하단에 새 일지 추가
   4. git add 및 commit 실행 (사용자에게 묻지 않고 즉시 수행)
-  5. 만약 니가 claude LLM 이면 커밋을 진행하지 않는다 (계속 작업을 진행)
 
 
 
