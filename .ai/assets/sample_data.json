@@ -1,0 +1,266 @@
+{
+  "scenarios": {
+    "A_news": [
+      {
+        "id": "A-01",
+        "input": "사막에서 캡슐 기차 타는 뉴스, 2005년이었나? 미국이었던 것 같고 엄청 빠르다고 했던 것 같아.",
+        "markings": [{"text": "2005년", "reason": "긴가민가"}]
+      },
+      {
+        "id": "A-02",
+        "input": "일본에서 달리는 자기부상열차 세계 기록 세웠다는 뉴스, 500km 넘었던 것 같은데 2014년쯤?",
+        "markings": [{"text": "2014년", "reason": "긴가민가"}, {"text": "500km", "reason": "긴가민가"}]
+      },
+      {
+        "id": "A-03",
+        "input": "노르웨이인가 덴마크에서 세계 최초로 전기차 도로 충전 구간 만들었다는 뉴스 봤어. 2022년?",
+        "markings": [{"text": "노르웨이인가 덴마크", "reason": "긴가민가"}, {"text": "2022년", "reason": "긴가민가"}]
+      },
+      {
+        "id": "A-04",
+        "input": "우주에서 찍은 오로라 영상 NASA가 공개했는데 허블 망원경으로 찍은 거라고 했던 것 같아.",
+        "markings": [{"text": "허블 망원경", "reason": "긴가민가"}]
+      },
+      {
+        "id": "A-05",
+        "input": "중국에서 인공 달 만들어서 도시 조명 대체한다는 뉴스, 2018년 2019년쯤이었나?",
+        "markings": [{"text": "2018년 2019년", "reason": "긴가민가"}]
+      }
+    ],
+    "B_contents": [
+      {
+        "id": "B-01",
+        "input": "태어날 때부터 역할이 정해져있고 남녀들이 올백 머리를 하고 있고 2000년대 해외 영화",
+        "markings": [{"text": "2000년대", "reason": "긴가민가"}]
+      },
+      {
+        "id": "B-02",
+        "input": "주인공이 기억을 지우는 기계로 전 연인과의 기억 지우는 영화, 짐 캐리 나오고 파란색 이미지가 강했어.",
+        "markings": [{"text": "짐 캐리", "reason": "긴가민가"}]
+      },
+      {
+        "id": "B-03",
+        "input": "넷플릭스 드라마인데 AI가 인간처럼 살고 감정도 느끼는 내용, 영국 드라마였던 것 같고 2010년대",
+        "markings": [{"text": "영국 드라마", "reason": "긴가민가"}, {"text": "2010년대", "reason": "긴가민가"}]
+      },
+      {
+        "id": "B-04",
+        "input": "꿈속에서 다른 사람 꿈으로 들어가는 영화, 레오나르도 디카프리오 주연이고 팽이가 계속 돌아가.",
+        "markings": [{"text": "레오나르도 디카프리오", "reason": "긴가민가"}]
+      },
+      {
+        "id": "B-05",
+        "input": "90년대 한국 영화인데 술래잡기 하는 귀신 나오고 주인공이 빨간 모자 쓴 아이를 찾는 내용",
+        "markings": [{"text": "90년대", "reason": "긴가민가"}]
+      }
+    ],
+    "C_mandela": [
+      {
+        "id": "C-01",
+        "input": "피카츄 꼬리 끝이 검은색이었던 것 같은데? 아닌가...",
+        "markings": [{"text": "검은색", "reason": "긴가민가"}]
+      },
+      {
+        "id": "C-02",
+        "input": "모노폴리 아저씨가 외알 안경 쓰고 있었던 거 아니야? 항상 그렇게 기억하는데.",
+        "markings": [{"text": "외알 안경", "reason": "긴가민가"}]
+      },
+      {
+        "id": "C-03",
+        "input": "포레스트 검프에서 '인생은 초콜릿 상자 같은 거야'라고 했던 것 같은데 정확히 뭐였더라?",
+        "markings": [{"text": "인생은 초콜릿 상자 같은 거야", "reason": "긴가민가"}]
+      },
+      {
+        "id": "C-04",
+        "input": "다스베이더가 '루크, 내가 네 아버지다'라고 했잖아. 맞지?",
+        "markings": [{"text": "루크, 내가 네 아버지다", "reason": "긴가민가"}]
+      },
+      {
+        "id": "C-05",
+        "input": "킷캣 초콜릿 이름에 하이픈(-) 있었던 것 같아. Kit-Kat 이렇게.",
+        "markings": [{"text": "Kit-Kat", "reason": "긴가민가"}]
+      }
+    ]
+  },
+  "corrections": [
+    {
+      "id": "A-01",
+      "originalText": "사막에서 캡슐 기차 타는 뉴스, 2005년이었나? 미국이었던 것 같고 엄청 빠르다고 했던 것 같아.",
+      "correctedText": "2016년 미국 네바다 사막에서 Hyperloop One 첫 공개 테스트가 진행됐습니다.",
+      "explanation": "2005년에는 하이퍼루프 기술이 존재하지 않았습니다. Elon Musk가 하이퍼루프 개념을 공개한 것은 2013년이며, Hyperloop One의 첫 실제 테스트는 2016년 5월 미국 네바다 사막에서 진행됐습니다.",
+      "probability": 95,
+      "sources": [
+        {"title": "Hyperloop One completes first full-scale test — The Verge (2016)", "url": "https://example.com/hyperloop-2016", "type": "NEWS"},
+        {"title": "Hyperloop One Test Video — YouTube", "url": "https://example.com/hyperloop-video", "type": "VIDEO"},
+        {"title": "사막 구체적 위치 추정", "url": "", "type": "GUESS"}
+      ]
+    },
+    {
+      "id": "A-02",
+      "originalText": "일본에서 달리는 자기부상열차 세계 기록 세웠다는 뉴스, 500km 넘었던 것 같은데 2014년쯤?",
+      "correctedText": "일본 SCMaglev가 2015년 4월 603km/h 세계 신기록을 달성했습니다.",
+      "explanation": "일본 JR 마그레브(SCMaglev)가 2015년 4월 21일 603km/h의 세계 최고 속도 기록을 세웠습니다. 연도는 2014년이 아닌 2015년이며, 속도는 500km/h가 아닌 603km/h입니다.",
+      "probability": 98,
+      "sources": [
+        {"title": "Japan's maglev train breaks world speed record — BBC (2015)", "url": "https://example.com/maglev-2015", "type": "NEWS"},
+        {"title": "SCMaglev 603km/h 기록 영상 — YouTube", "url": "https://example.com/maglev-video", "type": "VIDEO"}
+      ]
+    },
+    {
+      "id": "A-03",
+      "originalText": "노르웨이인가 덴마크에서 세계 최초로 전기차 도로 충전 구간 만들었다는 뉴스 봤어. 2022년?",
+      "correctedText": "스웨덴이 2023년 세계 최초로 전기차 도로 충전 구간(eRoad)을 공개 운영했습니다.",
+      "explanation": "노르웨이·덴마크가 아닌 스웨덴(eRoadArlanda)에서 2023년 최초 상용 eRoad를 개통했습니다. 이스라엘과 독일도 시험 구간을 운영 중이나 상용 운영 최초는 스웨덴입니다.",
+      "probability": 82,
+      "sources": [
+        {"title": "Sweden opens world's first permanent electric road — Reuters (2023)", "url": "https://example.com/eroad-2023", "type": "NEWS"},
+        {"title": "국가 및 정확한 개통일 추정", "url": "", "type": "GUESS"}
+      ]
+    },
+    {
+      "id": "A-04",
+      "originalText": "우주에서 찍은 오로라 영상 NASA가 공개했는데 허블 망원경으로 찍은 거라고 했던 것 같아.",
+      "correctedText": "NASA가 공개한 오로라 영상은 허블 우주망원경으로 찍은 것이 맞습니다. 목성 오로라(2016)가 대표적입니다.",
+      "explanation": "허블 망원경으로 오로라를 촬영한 사례는 여러 번 있으며, 가장 유명한 것은 2016년 목성 오로라입니다. 지구 오로라의 경우 ISS에서의 촬영이 더 흔하므로 어느 영상인지에 따라 다를 수 있습니다.",
+      "probability": 72,
+      "sources": [
+        {"title": "Hubble Captures Vivid Auroras in Jupiter's Atmosphere — NASA (2016)", "url": "https://example.com/hubble-aurora", "type": "NEWS"},
+        {"title": "어느 오로라 영상인지 추정", "url": "", "type": "GUESS"}
+      ]
+    },
+    {
+      "id": "A-05",
+      "originalText": "중국에서 인공 달 만들어서 도시 조명 대체한다는 뉴스, 2018년 2019년쯤이었나?",
+      "correctedText": "중국 청두시가 2018년 인공 달(반사 위성) 계획을 발표했으나 실제 발사는 이뤄지지 않았습니다.",
+      "explanation": "2018년 10월 청두시가 도시 조명 보완을 위한 반사 위성 '인공 달' 계획을 발표한 것은 사실입니다. 그러나 이후 실제 발사 및 운영이 성공했다는 확인된 보도는 없습니다.",
+      "probability": 88,
+      "sources": [
+        {"title": "China wants to launch an artificial moon — CNN (2018)", "url": "https://example.com/artificial-moon", "type": "NEWS"},
+        {"title": "실제 발사 여부 추정", "url": "", "type": "GUESS"}
+      ]
+    },
+    {
+      "id": "B-01",
+      "originalText": "태어날 때부터 역할이 정해져있고 남녀들이 올백 머리를 하고 있고 2000년대 해외 영화",
+      "correctedText": "가타카 (Gattaca, 1997) — 유전자로 계급이 결정되는 디스토피아 SF 영화",
+      "explanation": "가타카(Gattaca, 1997)는 유전자 조작으로 태어난 '적격자'와 자연 출생 '부적격자' 간의 계급 차별을 다룹니다. 등장인물들의 단정한 올백 헤어스타일이 특징이며, 2000년대가 아닌 1997년 개봉작입니다.",
+      "probability": 93,
+      "sources": [
+        {"title": "Gattaca (1997) — IMDb", "url": "https://example.com/gattaca-imdb", "type": "NEWS"},
+        {"title": "가타카 공식 트레일러 — YouTube", "url": "https://example.com/gattaca-trailer", "type": "VIDEO"}
+      ]
+    },
+    {
+      "id": "B-02",
+      "originalText": "주인공이 기억을 지우는 기계로 전 연인과의 기억 지우는 영화, 짐 캐리 나오고 파란색 이미지가 강했어.",
+      "correctedText": "이터널 선샤인 (Eternal Sunshine of the Spotless Mind, 2004) — 짐 캐리, 케이트 윈슬렛 주연",
+      "explanation": "미셸 공드리 감독의 '이터널 선샤인(2004)'이 맞습니다. 짐 캐리가 주인공 조엘 역을 맡았으며, 기억 삭제 장치 Lacuna Inc.를 이용해 전 연인 클레멘타인(케이트 윈슬렛)과의 기억을 지우는 내용입니다. 파란 색감이 두드러집니다.",
+      "probability": 99,
+      "sources": [
+        {"title": "Eternal Sunshine of the Spotless Mind — IMDb", "url": "https://example.com/eternal-sunshine", "type": "NEWS"},
+        {"title": "이터널 선샤인 예고편 — YouTube", "url": "https://example.com/eternal-sunshine-trailer", "type": "VIDEO"}
+      ]
+    },
+    {
+      "id": "B-03",
+      "originalText": "넷플릭스 드라마인데 AI가 인간처럼 살고 감정도 느끼는 내용, 영국 드라마였던 것 같고 2010년대",
+      "correctedText": "휴먼스 (Humans, 2015~2018) — 영국 Channel 4 드라마, 이후 AMC에서 공동 제작",
+      "explanation": "'휴먼스(Humans)'는 영국 Channel 4와 AMC가 공동 제작한 드라마로 2015년부터 2018년까지 방영됐습니다. 인간형 로봇(Synths)이 감정과 의식을 가지게 되는 내용입니다. 넷플릭스 오리지널은 아니지만 이후 넷플릭스에서 시청 가능합니다.",
+      "probability": 85,
+      "sources": [
+        {"title": "Humans (TV Series 2015–2018) — IMDb", "url": "https://example.com/humans-imdb", "type": "NEWS"},
+        {"title": "플랫폼 및 제작사 추정", "url": "", "type": "GUESS"}
+      ]
+    },
+    {
+      "id": "B-04",
+      "originalText": "꿈속에서 다른 사람 꿈으로 들어가는 영화, 레오나르도 디카프리오 주연이고 팽이가 계속 돌아가.",
+      "correctedText": "인셉션 (Inception, 2010) — 크리스토퍼 놀란 감독, 레오나르도 디카프리오 주연",
+      "explanation": "크리스토퍼 놀란 감독의 '인셉션(2010)'이 맞습니다. 타인의 꿈속에 침투해 아이디어를 심는 '인셉션' 작전을 다루며, 레오나르도 디카프리오가 주인공 코브 역을 맡았습니다. 팽이(토템)는 현실과 꿈을 구별하는 핵심 소품입니다.",
+      "probability": 99,
+      "sources": [
+        {"title": "Inception (2010) — IMDb", "url": "https://example.com/inception-imdb", "type": "NEWS"},
+        {"title": "인셉션 공식 트레일러 — YouTube", "url": "https://example.com/inception-trailer", "type": "VIDEO"}
+      ]
+    },
+    {
+      "id": "B-05",
+      "originalText": "90년대 한국 영화인데 술래잡기 하는 귀신 나오고 주인공이 빨간 모자 쓴 아이를 찾는 내용",
+      "correctedText": "여고괴담 (1998) 또는 구미호 (1994)일 가능성이 있으나, 빨간 모자 아이 단서로는 '빨간 모자의 진실' 계열 작품일 수 있습니다.",
+      "explanation": "90년대 한국 공포 영화 중 술래잡기 귀신과 빨간 모자 아이가 모두 등장하는 작품을 특정하기 어렵습니다. 여고괴담(1998)이 가장 유명하나 빨간 모자는 핵심 요소가 아닙니다. 추가 단서가 있으면 더 정확한 보정이 가능합니다.",
+      "probability": 55,
+      "sources": [
+        {"title": "여고괴담 (1998) — KMDb", "url": "https://example.com/whispering-corridors", "type": "NEWS"},
+        {"title": "정확한 작품 추정", "url": "", "type": "GUESS"}
+      ]
+    },
+    {
+      "id": "C-01",
+      "originalText": "피카츄 꼬리 끝이 검은색이었던 것 같은데? 아닌가...",
+      "correctedText": "피카츄의 꼬리 끝은 처음부터 항상 노란색입니다. 검은색 꼬리 끝은 존재하지 않습니다.",
+      "explanation": "이것은 대표적인 만델라 효과 사례입니다. 많은 사람들이 피카츄 꼬리 끝을 검은색으로 기억하지만, 포켓몬스터 초기부터 현재까지 피카츄의 꼬리 끝은 항상 노란색입니다. 귀 끝의 검은색 부분과 혼동한 것으로 추정됩니다.",
+      "probability": 99,
+      "sources": [
+        {"title": "Pikachu — Bulbapedia (공식 도감)", "url": "https://example.com/pikachu-bulbapedia", "type": "NEWS"}
+      ]
+    },
+    {
+      "id": "C-02",
+      "originalText": "모노폴리 아저씨가 외알 안경 쓰고 있었던 거 아니야? 항상 그렇게 기억하는데.",
+      "correctedText": "모노폴리의 리치 엉클 페니백스(Rich Uncle Pennybags)는 외알 안경(모노클)을 쓴 적이 없습니다.",
+      "explanation": "이것도 유명한 만델라 효과 사례입니다. 모노폴리 마스코트는 실크햇과 콧수염이 특징이지만 외알 안경은 없습니다. Mr. 피넛(Planters)이나 다른 캐릭터와 혼동한 것으로 추정됩니다.",
+      "probability": 99,
+      "sources": [
+        {"title": "Rich Uncle Pennybags — Monopoly Wiki", "url": "https://example.com/monopoly-pennybags", "type": "NEWS"}
+      ]
+    },
+    {
+      "id": "C-03",
+      "originalText": "포레스트 검프에서 '인생은 초콜릿 상자 같은 거야'라고 했던 것 같은데 정확히 뭐였더라?",
+      "correctedText": "정확한 대사는 '인생은 초콜릿 상자와 같아, 무엇을 집게 될지 절대 알 수 없지(Life is like a box of chocolates, you never know what you're gonna get)'입니다.",
+      "explanation": "많은 사람들이 'Life is like a box of chocolates'라고만 기억하지만, 실제 대사는 'Life was like a box of chocolates, you never know what you're gonna get'(과거형)입니다. 어머니가 한 말을 인용하는 장면입니다.",
+      "probability": 97,
+      "sources": [
+        {"title": "Forrest Gump (1994) Quotes — IMDb", "url": "https://example.com/forrest-gump-quotes", "type": "NEWS"}
+      ]
+    },
+    {
+      "id": "C-04",
+      "originalText": "다스베이더가 '루크, 내가 네 아버지다'라고 했잖아. 맞지?",
+      "correctedText": "실제 대사는 '루크'가 없습니다. 정확한 대사는 'No, I am your father'입니다.",
+      "explanation": "스타워즈 에피소드 5(1980)에서 다스베이더의 실제 대사는 'No, I am your father'입니다. '루크, 내가 네 아버지다(Luke, I am your father)'는 존재하지 않는 대사이지만 가장 유명하게 잘못 기억되는 만델라 효과 사례 중 하나입니다.",
+      "probability": 99,
+      "sources": [
+        {"title": "The Empire Strikes Back (1980) Quotes — IMDb", "url": "https://example.com/empire-strikes-back", "type": "NEWS"}
+      ]
+    },
+    {
+      "id": "C-05",
+      "originalText": "킷캣 초콜릿 이름에 하이픈(-) 있었던 것 같아. Kit-Kat 이렇게.",
+      "correctedText": "킷캣의 공식 브랜드 표기는 'KitKat'(하이픈 없음)입니다. 다만 국가별로 다를 수 있습니다.",
+      "explanation": "이것도 만델라 효과 사례입니다. 영국을 포함한 대부분의 국가에서 'KitKat'으로 표기하며 하이픈이 없습니다. 미국에서는 과거 'Kit Kat'(띄어쓰기)을 사용한 적이 있어 혼동이 생길 수 있습니다.",
+      "probability": 91,
+      "sources": [
+        {"title": "KitKat brand history — Nestlé", "url": "https://example.com/kitkat-brand", "type": "NEWS"},
+        {"title": "국가별 표기 추정", "url": "", "type": "GUESS"}
+      ]
+    }
+  ],
+  "history": [
+    {"id": "h01", "date": "2026-02-28", "scenarioId": "A-01", "inputSummary": "사막에서 캡슐 기차 뉴스…", "correctedSummary": "2016년 Hyperloop 테스트"},
+    {"id": "h02", "date": "2026-02-28", "scenarioId": "C-01", "inputSummary": "피카츄 꼬리 끝이 검은색…", "correctedSummary": "피카츄 꼬리는 노란색"},
+    {"id": "h03", "date": "2026-02-25", "scenarioId": "B-01", "inputSummary": "역할이 정해진 영화 2000…", "correctedSummary": "가타카 (Gattaca, 1997)"},
+    {"id": "h04", "date": "2026-02-25", "scenarioId": "C-04", "inputSummary": "루크, 내가 네 아버지다…", "correctedSummary": "No, I am your father"},
+    {"id": "h05", "date": "2026-02-24", "scenarioId": "B-04", "inputSummary": "꿈속으로 들어가는 영화…", "correctedSummary": "인셉션 (Inception, 2010)"},
+    {"id": "h06", "date": "2026-02-24", "scenarioId": "A-02", "inputSummary": "일본 자기부상열차 기록…", "correctedSummary": "2015년 SCMaglev 603km/h"},
+    {"id": "h07", "date": "2026-02-22", "scenarioId": "C-03", "inputSummary": "포레스트 검프 초콜릿 대사…", "correctedSummary": "Life was like a box of chocolates…"},
+    {"id": "h08", "date": "2026-02-22", "scenarioId": "B-02", "inputSummary": "기억 지우는 영화 짐 캐리…", "correctedSummary": "이터널 선샤인 (2004)"},
+    {"id": "h09", "date": "2026-02-20", "scenarioId": "A-03", "inputSummary": "전기차 도로 충전 노르웨이…", "correctedSummary": "스웨덴 eRoad 2023"},
+    {"id": "h10", "date": "2026-02-20", "scenarioId": "C-02", "inputSummary": "모노폴리 외알 안경…", "correctedSummary": "모노클 없음 (만델라 효과)"},
+    {"id": "h11", "date": "2026-02-18", "scenarioId": "B-03", "inputSummary": "AI 인간처럼 사는 영국 드라마…", "correctedSummary": "휴먼스 (Humans, 2015)"},
+    {"id": "h12", "date": "2026-02-18", "scenarioId": "A-04", "inputSummary": "허블 망원경 오로라 영상…", "correctedSummary": "목성 오로라 허블 (2016)"},
+    {"id": "h13", "date": "2026-02-15", "scenarioId": "C-05", "inputSummary": "킷캣 Kit-Kat 하이픈…", "correctedSummary": "KitKat (하이픈 없음)"},
+    {"id": "h14", "date": "2026-02-15", "scenarioId": "A-05", "inputSummary": "중국 인공 달 도시 조명…", "correctedSummary": "2018년 발표, 실제 발사 미확인"},
+    {"id": "h15", "date": "2026-02-12", "scenarioId": "B-05", "inputSummary": "90년대 술래잡기 귀신 영화…", "correctedSummary": "여고괴담(1998) 추정"}
+  ]
+}
