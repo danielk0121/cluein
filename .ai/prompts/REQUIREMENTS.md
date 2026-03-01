@@ -94,6 +94,13 @@
 
 ---
 
+## 디자인 요구 사항
+
+- 아래 첨부파일 화면을 참고해서 앱 UX 를 디자인 한다
+  - ![gemini-web-init.png](../assets/ref/gemini-web-init.png)
+
+---
+
 ## 용어 정의
 
 | 용어 | 설명 |
