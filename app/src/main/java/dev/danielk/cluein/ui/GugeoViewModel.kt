@@ -10,12 +10,14 @@ import dev.danielk.cluein.data.FakeGugeoEngine
 import dev.danielk.cluein.data.GugeoEngineImpl
 import dev.danielk.cluein.data.HistoryDao
 import dev.danielk.cluein.data.HistoryEntity
+import dev.danielk.cluein.domain.ChatMessage
 import dev.danielk.cluein.domain.ConfidenceMarking
 import dev.danielk.cluein.domain.CorrectionResult
 import dev.danielk.cluein.domain.DummyData
 import dev.danielk.cluein.domain.GugeoEngine
 import dev.danielk.cluein.domain.GugeoRequest
 import dev.danielk.cluein.domain.HistoryItem
+import dev.danielk.cluein.domain.Sender
 import dev.danielk.cluein.domain.SourceItem
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -30,11 +32,20 @@ sealed class CorrectionState {
 }
 
 class GugeoViewModel(
-    private val engine: GugeoEngine,
+    private var engine: GugeoEngine,
     private val historyDao: HistoryDao
 ) : ViewModel() {
 
     private val gson = Gson()
+
+    // 런타임에 엔진을 교체할 수 있도록 엔진 주입 방식을 개선합니다.
+    fun updateEngine(newApiKey: String) {
+        engine = GugeoEngineImpl(newApiKey)
+    }
+
+    fun updateToDummyEngine() {
+        engine = FakeGugeoEngine()
+    }
 
     private val _state = MutableStateFlow<CorrectionState>(CorrectionState.Idle)
     val state: StateFlow<CorrectionState> = _state
@@ -44,6 +55,9 @@ class GugeoViewModel(
 
     private val _markings = MutableStateFlow<List<ConfidenceMarking>>(emptyList())
     val markings: StateFlow<List<ConfidenceMarking>> = _markings
+
+    private val _chatMessages = MutableStateFlow<List<ChatMessage>>(emptyList())
+    val chatMessages: StateFlow<List<ChatMessage>> = _chatMessages
 
     // Room DB에서 이력을 가져와 UI용 HistoryItem으로 변환
     val history: StateFlow<List<HistoryItem>> = historyDao.getAllHistory()
@@ -74,25 +88,59 @@ class GugeoViewModel(
     }
 
     fun addMarking(marking: ConfidenceMarking) {
-        _markings.value = _markings.value + marking
+        if (_markings.value.none { it.text == marking.text }) {
+            _markings.value = _markings.value + marking
+        }
+    }
+
+    fun removeMarking(text: String) {
+        _markings.value = _markings.value.filter { it.text != text }
     }
 
     fun setResultFromHistory(result: CorrectionResult) {
         _state.value = CorrectionState.Success(result)
+        // 채팅 창에도 추가 (선택적)
+        val userMsg = ChatMessage(UUID.randomUUID().toString(), result.originalText, dev.danielk.cluein.domain.Sender.USER)
+        val botMsg = ChatMessage(UUID.randomUUID().toString(), result.correctedText, dev.danielk.cluein.domain.Sender.BOT, correctionResult = result)
+        _chatMessages.value = listOf(userMsg, botMsg)
     }
 
     fun correct(request: GugeoRequest) {
         viewModelScope.launch {
+            // 채팅 기록에 사용자 메시지 추가
+            val userMessage = ChatMessage(
+                id = UUID.randomUUID().toString(),
+                text = request.originalText,
+                sender = dev.danielk.cluein.domain.Sender.USER
+            )
+            _chatMessages.value = _chatMessages.value + userMessage
+            _inputText.value = "" // 입력창 비우기
+
             _state.value = CorrectionState.Loading
             try {
                 val response = engine.correct(request)
                 val result = response.toCorrectionResult(request.originalText)
                 _state.value = CorrectionState.Success(result)
                 
+                // 보정 성공 시 채팅 기록에 봇 메시지 추가
+                val botMessage = ChatMessage(
+                    id = UUID.randomUUID().toString(),
+                    text = result.correctedText,
+                    sender = dev.danielk.cluein.domain.Sender.BOT,
+                    correctionResult = result
+                )
+                _chatMessages.value = _chatMessages.value + botMessage
+                
                 // 보정 성공 시 DB에 이력 저장
                 saveToHistory(result)
             } catch (e: Exception) {
                 _state.value = CorrectionState.Error(e.message ?: "알 수 없는 오류")
+                val errorMessage = ChatMessage(
+                    id = UUID.randomUUID().toString(),
+                    text = "죄송합니다. 오류가 발생했습니다: ${e.message}",
+                    sender = dev.danielk.cluein.domain.Sender.BOT
+                )
+                _chatMessages.value = _chatMessages.value + errorMessage
             }
         }
     }

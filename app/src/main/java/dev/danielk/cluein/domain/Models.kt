@@ -22,6 +22,16 @@ data class HistoryItem(
     val full: CorrectionResult
 )
 
+enum class Sender { USER, BOT }
+
+data class ChatMessage(
+    val id: String,
+    val text: String,
+    val sender: Sender,
+    val correctionResult: CorrectionResult? = null,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
 object DummyData {
     val results = listOf(
         CorrectionResult(

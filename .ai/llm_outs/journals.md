@@ -163,3 +163,26 @@
 - `todolist.md` 전체 작업 완료([x]) 처리
 - `ANALYSIS.md`에 이전 작업 중단 원인 분석 결과 기록
 
+## 2026-03-01T15:15:00+09:00
+
+**작업 내용**: 페이즈 07 UX 고도화 및 대화형(채팅형) 인터페이스 전면 전환
+
+- 대화형 인터페이스(NFR-02) 구현:
+  - `HomeScreen`을 폼 방식에서 하단 입력바 + 상단 메시지 목록 형태의 채팅형 UI로 리팩토링
+  - `GugeoViewModel`을 단일 상태 관리에서 `chatMessages` 리스트 관리 방식으로 확장
+  - `ChatMessage`, `Sender` 데이터 모델 추가 (domain 레이어)
+- UI/UX 디자인 고도화 (Gemini 웹 스타일 반영):
+  - `Suggestion Chips` 추가: 빈 채팅 화면에서 사용자의 모호한 입력을 유도하는 추천 질문 제공
+  - `LoadingBubble` 애니메이션: "분석 중...", "단서 조합 중..." 등 단계별 안내 문구가 순차적으로 나타나도록 개선
+  - `ChatBubble` 스타일링: 사용자/봇 구분 및 보정 결과(신뢰도, 설명)의 시각적 계층화
+- 기능 정교화 및 보완:
+  - `SourceCard`: URL 클릭 시 브라우저 연동(`Intent`) 및 추측 항목(GUESS)에 대한 경고 아이콘 적용
+  - `MarkingScreen`: 텍스트 어절 단위 칩 선택 방식의 실질적인 마킹 UI 구현
+  - `HistoryCard`: 이력 목록 가독성 개선 및 통일된 디자인 적용
+- 보안 및 설정 경험 개선(NFR-04):
+  - `ApiKeySetupScreen`을 제거하고 `HomeScreen` 내 `ApiKeySetupDialog`로 통합하여 대화 흐름 유지
+  - 런타임에 API 키 및 엔진(`GugeoEngineImpl` / `FakeGugeoEngine`) 동적 교체 로직 구현
+- 빌드 안정화:
+  - `material-icons` 의존성 부재에 따른 대체 아이콘 적용 및 컴파일 에러(타입 추론, 임포트 누락) 수정
+  - `./gradlew assembleDebug` 빌드 성공 확인
+

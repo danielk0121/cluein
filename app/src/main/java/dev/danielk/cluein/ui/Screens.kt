@@ -25,199 +25,344 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import dev.danielk.cluein.data.ApiKeyManager
-import dev.danielk.cluein.domain.*
+import dev.danielk.cluein.domain.ChatMessage
+import dev.danielk.cluein.domain.ConfidenceMarking
+import dev.danielk.cluein.domain.CorrectionResult
+import dev.danielk.cluein.domain.DummyData
+import dev.danielk.cluein.domain.GugeoRequest
+import dev.danielk.cluein.domain.HistoryItem
+import dev.danielk.cluein.domain.Sender
+import dev.danielk.cluein.domain.SourceItem
+import dev.danielk.cluein.domain.SourceType
 import kotlinx.coroutines.delay
 
-// ─── SCR-08. API 키 설정 화면 ────────────────────────────────────────────────
+// ─── SCR-01. 홈 / 대화 화면 ───────────────────────────────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ApiKeySetupScreen(navController: NavHostController) {
-    var apiKey by remember { mutableStateOf("") }
-    val context = LocalContext.current
-
-    Scaffold(
-        topBar = { TopAppBar(title = { Text("Gemini API 설정") }) }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                "Cluein을 시작하기 위해\nGemini API 키가 필요합니다.",
-                style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                "입력하신 키는 기기에만 안전하게 저장됩니다.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.outline
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-
-            OutlinedTextField(
-                value = apiKey,
-                onValueChange = { apiKey = it },
-                label = { Text("API Key") },
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    if (apiKey.isNotBlank()) {
-                        ApiKeyManager.saveApiKey(context, apiKey)
-                        navController.navigate("home") {
-                            popUpTo("api_key_setup") { inclusive = true }
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = apiKey.isNotBlank()
-            ) {
-                Text("저장하고 시작하기")
-            }
-
-            TextButton(
-                onClick = {
-                    navController.navigate("home") {
-                        popUpTo("api_key_setup") { inclusive = true }
-                    }
-                }
-            ) {
-                Text("나중에 설정 (더미 모드)")
-            }
-        }
-    }
-}
-
-// ─── SCR-01. 홈 / 입력 화면 ───────────────────────────────────────────────────
-
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreen(navController: NavHostController, vm: GugeoViewModel) {
     val inputText by vm.inputText.collectAsState()
+    val chatMessages by vm.chatMessages.collectAsState()
+    val state by vm.state.collectAsState()
     val history by vm.history.collectAsState()
-    val recentHistory = history.take(3)
+    
+    val context = LocalContext.current
+    val scrollState = rememberLazyListState()
+    var showSettings by remember { mutableStateOf(!ApiKeyManager.hasApiKey(context)) }
+
+    // 새로운 메시지가 추가되면 하단으로 스크롤
+    LaunchedEffect(chatMessages.size) {
+        if (chatMessages.isNotEmpty()) {
+            scrollState.animateScrollToItem(chatMessages.size - 1)
+        }
+    }
+
+    if (showSettings) {
+        ApiKeySetupDialog(
+            onDismiss = { showSettings = false },
+            onSave = { apiKey ->
+                ApiKeyManager.saveApiKey(context, apiKey)
+                vm.updateEngine(apiKey)
+                showSettings = false
+            },
+            onUseDummy = {
+                vm.updateToDummyEngine()
+                showSettings = false
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Cluein") },
                 actions = {
-                    IconButton(onClick = { navController.navigate("api_key_setup") }) {
+                    IconButton(onClick = { navController.navigate("history") }) {
+                        Icon(Icons.Default.List, contentDescription = "이력")
+                    }
+                    IconButton(onClick = { showSettings = true }) {
                         Icon(Icons.Default.Settings, contentDescription = "설정")
                     }
                 }
             )
+        },
+        bottomBar = {
+            // 하단 입력바 (Gemini 스타일)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .imePadding()
+            ) {
+                if (chatMessages.isEmpty() && inputText.isBlank()) {
+                    // 제안용 칩 (Suggestion Chips)
+                    Text("추천 질문", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(bottom = 8.dp))
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("사막에서 기차 타는 뉴스", "가타카 영화 제목", "피카츄 꼬리 색상").forEach { suggestion ->
+                            SuggestionChip(
+                                onClick = { vm.setInputText(suggestion) },
+                                label = { Text(suggestion) }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(28.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    tonalElevation = 2.dp
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextField(
+                            value = inputText,
+                            onValueChange = { vm.setInputText(it) },
+                            placeholder = { Text("생각나는 단서를 입력해 보세요...") },
+                            modifier = Modifier.weight(1f),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            ),
+                            maxLines = 4
+                        )
+                        IconButton(
+                            onClick = { 
+                                vm.correct(GugeoRequest(inputText))
+                            },
+                            enabled = inputText.isNotBlank() && state !is CorrectionState.Loading,
+                            colors = IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(Icons.Default.Send, contentDescription = "전송")
+                        }
+                    }
+                }
+            }
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        if (chatMessages.isEmpty()) {
+            // 빈 화면: 최근 이력 미리보기
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        "그거 있잖아~",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextField(
-                        value = inputText,
-                        onValueChange = { vm.setInputText(it) },
-                        placeholder = { Text("생각나는 대로 입력해 보세요.\n예: 사막에서 캡슐 기차 타는 뉴스, 2005년이었나?") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 120.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(
-                    onClick = { navController.navigate("marking") },
-                    modifier = Modifier.weight(1f),
-                    enabled = inputText.isNotBlank()
-                ) {
-                    Text("불확실한 부분 마킹")
-                }
-                Button(
-                    onClick = { 
-                        vm.correct(GugeoRequest(inputText))
-                        navController.navigate("loading") 
-                    },
-                    modifier = Modifier.weight(1f),
-                    enabled = inputText.isNotBlank()
-                ) {
-                    Text("기억 보정 시작")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text("최근 이력", style = MaterialTheme.typography.titleSmall)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (recentHistory.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("최근 이력이 없습니다.", color = MaterialTheme.colorScheme.outline)
-                }
-            } else {
-                recentHistory.forEach { item ->
-                    HistoryCard(item) {
-                        navController.navigate("history_detail/${item.id}")
+                Icon(
+                    Icons.Default.Search,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "무엇을 찾아드릴까요?",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    "단편적인 기억을 단서로 사실을 복원합니다.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.outline
+                )
+                
+                if (history.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(48.dp))
+                    Text("최근 보정 이력", style = MaterialTheme.typography.titleSmall)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    history.take(3).forEach { item ->
+                        HistoryCard(item) {
+                            vm.setResultFromHistory(item.full)
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
-
-                TextButton(
-                    onClick = { navController.navigate("history") },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                ) {
-                    Text("이력 전체 보기")
+            }
+        } else {
+            // 채팅 메시지 목록
+            LazyColumn(
+                state = scrollState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(chatMessages) { message ->
+                    ChatBubble(message, onSourceClick = { navController.navigate("sources") })
+                }
+                
+                if (state is CorrectionState.Loading) {
+                    item {
+                        LoadingBubble()
+                    }
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ApiKeySetupDialog(
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit,
+    onUseDummy: () -> Unit
+) {
+    var apiKey by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Gemini API 설정") },
+        text = {
+            Column {
+                Text(
+                    "Cluein을 시작하기 위해 Gemini API 키가 필요합니다. 입력하신 키는 기기에만 안전하게 저장됩니다.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.outline
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = apiKey,
+                    onValueChange = { apiKey = it },
+                    label = { Text("API Key") },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSave(apiKey) },
+                enabled = apiKey.isNotBlank()
+            ) {
+                Text("저장 및 시작")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onUseDummy) {
+                Text("더미 모드 사용")
+            }
+        }
+    )
+}
+
+@Composable
+fun ChatBubble(message: ChatMessage, onSourceClick: () -> Unit) {
+    val isBot = message.sender == Sender.BOT
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = if (isBot) Alignment.Start else Alignment.End
+    ) {
+        Surface(
+            shape = RoundedCornerShape(
+                topStart = 16.dp,
+                topEnd = 16.dp,
+                bottomStart = if (isBot) 4.dp else 16.dp,
+                bottomEnd = if (isBot) 16.dp else 4.dp
+            ),
+            color = if (isBot) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primary,
+            contentColor = if (isBot) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimary
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(text = message.text, style = MaterialTheme.typography.bodyLarge)
+                
+                if (isBot && message.correctionResult != null) {
+                    val result = message.correctionResult
+                    Spacer(modifier = Modifier.height(8.dp))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "신뢰도: ${result.probability}%",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(result.explanation, style = MaterialTheme.typography.bodySmall)
+                    
+                    TextButton(
+                        onClick = onSourceClick,
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text("출처 보기", style = MaterialTheme.typography.labelLarge)
+                        Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, modifier = Modifier.size(16.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LoadingBubble() {
+    val texts = listOf(
+        "기억을 분석하고 있습니다...",
+        "단서를 조합 중입니다...",
+        "사실 관계를 확인하고 있습니다...",
+        "거의 다 왔어요!"
+    )
+    var currentTextIndex by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1500)
+            currentTextIndex = (currentTextIndex + 1) % texts.size
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(20.dp),
+            strokeWidth = 2.dp,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        AnimatedContent(
+            targetState = texts[currentTextIndex],
+            transitionSpec = {
+                fadeIn() + slideInVertically { it } togetherWith fadeOut() + slideOutVertically { -it }
+            },
+            label = "LoadingText"
+        ) { text ->
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.outline
+            )
+        }
+    }
+}
+
 // ─── SCR-02. 확신도 마킹 화면 ─────────────────────────────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun MarkingScreen(navController: NavHostController, vm: GugeoViewModel) {
     val inputText by vm.inputText.collectAsState()
     val markings by vm.markings.collectAsState()
+
+    // 텍스트를 어절 단위로 분리
+    val words = remember(inputText) {
+        inputText.split(Regex("\\s+")).filter { it.isNotBlank() }
+    }
 
     Scaffold(
         topBar = {
@@ -245,31 +390,51 @@ fun MarkingScreen(navController: NavHostController, vm: GugeoViewModel) {
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            Text("긴가민가한 부분을 선택하세요.", style = MaterialTheme.typography.bodyLarge)
+            Text("긴가민가한 부분을 터치하여 마킹하세요.", style = MaterialTheme.typography.bodyLarge)
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 더미 마킹 UI: 실제 텍스트 선택 로직은 복잡하므로 간단한 태그 예시로 대체
+            // 어절 선택 UI
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                    .weight(0.4f),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
-                Box(modifier = Modifier.padding(16.dp)) {
-                    Text(inputText)
+                FlowRow(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    words.forEach { word ->
+                        val isMarked = markings.any { it.text == word }
+                        FilterChip(
+                            selected = isMarked,
+                            onClick = {
+                                if (isMarked) vm.removeMarking(word)
+                                else vm.addMarking(ConfidenceMarking(0, word.length, word))
+                            },
+                            label = { Text(word) },
+                            leadingIcon = if (isMarked) {
+                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                            } else null
+                        )
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
             Text("마킹된 항목", style = MaterialTheme.typography.titleSmall)
             
-            LazyColumn(modifier = Modifier.weight(1f)) {
+            LazyColumn(modifier = Modifier.weight(0.6f)) {
                 items(markings) { marking ->
                     ListItem(
                         headlineContent = { Text("\"${marking.text}\"") },
                         supportingContent = { Text("긴가민가") },
                         trailingContent = {
-                            IconButton(onClick = { /* Remove */ }) {
+                            IconButton(onClick = { vm.removeMarking(marking.text) }) {
                                 Icon(Icons.Default.Close, contentDescription = "삭제")
                             }
                         }
@@ -561,47 +726,101 @@ fun HistoryCard(item: HistoryItem, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(item.inputSummary, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.outline)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("→ ${item.correctedSummary}", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.List,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.outline
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    item.date,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
-            Text(item.date, style = MaterialTheme.typography.labelSmall, modifier = Modifier.align(Alignment.End))
+            Text(
+                item.inputSummary,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                "→ ${item.correctedSummary}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
 
 @Composable
 fun SourceCard(source: SourceItem) {
+    val context = LocalContext.current
+    val isGuess = source.type == SourceType.GUESS
+    
     val icon = when (source.type) {
         SourceType.NEWS -> Icons.Default.Info
         SourceType.VIDEO -> Icons.Default.PlayArrow
         SourceType.GUESS -> Icons.Default.Warning
     }
     
+    val containerColor = if (isGuess) {
+        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        border = if (isGuess) BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.2f)) else null
     ) {
         ListItem(
-            headlineContent = { Text(source.title) },
-            supportingContent = { 
-                if (source.url.isNotBlank()) Text(source.url, maxLines = 1) 
-                else if (source.type == SourceType.GUESS) Text("출처 없음, 추정")
+            headlineContent = { 
+                Text(
+                    source.title,
+                    fontWeight = if (isGuess) FontWeight.Normal else FontWeight.Bold
+                ) 
             },
-            leadingContent = { Icon(icon, contentDescription = null) },
+            supportingContent = { 
+                if (source.url.isNotBlank()) {
+                    Text(source.url, maxLines = 1, color = MaterialTheme.colorScheme.primary)
+                } else if (isGuess) {
+                    Text("확인된 출처가 없는 인공지능 추정 정보입니다.", style = MaterialTheme.typography.bodySmall)
+                }
+            },
+            leadingContent = { 
+                Icon(
+                    icon, 
+                    contentDescription = null,
+                    tint = if (isGuess) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                ) 
+            },
             trailingContent = {
                 if (source.url.isNotBlank()) {
-                    IconButton(onClick = { /* Open URL */ }) {
-                        Icon(Icons.Default.KeyboardArrowRight, contentDescription = "열기")
+                    IconButton(onClick = { 
+                        try {
+                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(source.url))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            // URL 열기 실패 처리
+                        }
+                    }) {
+                        Icon(Icons.Default.ArrowForward, contentDescription = "열기")
                     }
                 }
-            }
+            },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
         )
     }
 }
