@@ -17,9 +17,89 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
+
+// ─── SCR-08. API 키 입력 화면 ─────────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ApiKeySetupScreen(navController: NavHostController) {
+    val context = LocalContext.current
+    var apiKey by remember { mutableStateOf("") }
+    var showKey by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf("") }
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Gemini API 키 설정") }) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                "Cluein은 Google Gemini API를 사용합니다.\nAPI 키는 기기 내 Keystore에 암호화하여 저장되며, 소스코드나 파일에 기록되지 않습니다.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            OutlinedTextField(
+                value = apiKey,
+                onValueChange = { apiKey = it; error = "" },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Gemini API Key") },
+                placeholder = { Text("AIzaSy...") },
+                visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    TextButton(onClick = { showKey = !showKey }) {
+                        Text(if (showKey) "숨기기" else "보기")
+                    }
+                },
+                isError = error.isNotEmpty(),
+                singleLine = true
+            )
+
+            if (error.isNotEmpty()) {
+                Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
+
+            Button(
+                onClick = {
+                    if (apiKey.isBlank()) {
+                        error = "API 키를 입력하세요."
+                    } else {
+                        ApiKeyManager.saveApiKey(context, apiKey.trim())
+                        navController.navigate(Routes.HOME) {
+                            popUpTo(Routes.API_KEY_SETUP) { inclusive = true }
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("저장하고 시작하기")
+            }
+
+            OutlinedButton(
+                onClick = {
+                    // 더미 모드: 키 없이 FakeGugeoEngine으로 진행
+                    ApiKeyManager.saveApiKey(context, "FAKE_KEY")
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.API_KEY_SETUP) { inclusive = true }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("더미 모드로 시작 (API 키 없이)")
+            }
+        }
+    }
+}
 
 // ─── SCR-01. 홈 / 입력 화면 ───────────────────────────────────────────────────
 

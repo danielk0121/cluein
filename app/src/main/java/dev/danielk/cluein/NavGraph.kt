@@ -1,12 +1,15 @@
 package dev.danielk.cluein
 
+import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 object Routes {
+    const val API_KEY_SETUP = "api_key_setup"
     const val HOME = "home"
     const val MARKING = "marking"
     const val LOADING = "loading"
@@ -19,7 +22,13 @@ object Routes {
 
 @Composable
 fun ClueinNavGraph(navController: NavHostController = rememberNavController()) {
-    NavHost(navController = navController, startDestination = Routes.HOME) {
+    val context = LocalContext.current
+    val startDest = if (ApiKeyManager.hasApiKey(context)) Routes.HOME else Routes.API_KEY_SETUP
+
+    NavHost(navController = navController, startDestination = startDest) {
+        composable(Routes.API_KEY_SETUP) {
+            ApiKeySetupScreen(navController)
+        }
         composable(Routes.HOME) {
             HomeScreen(navController)
         }

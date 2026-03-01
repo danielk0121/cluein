@@ -37,12 +37,12 @@
 ## 페이즈 04. Gugeo Engine API 설계
 
 - [ ] Gugeo Engine API 인터페이스 설계 (Google Gemini API 기반)
-  - [ ] GE-01. Gemini API 키 발급 및 연동 확인
-    - [ ] GE-01-1. Google AI Studio 또는 Google Cloud Console에서 API 키 발급
-    - [ ] GE-01-2. 앱 최초 실행 시 사용자가 직접 API 키를 입력하는 UI 구현
-    - [ ] GE-01-3. 입력된 키는 Android Keystore를 통해 암호화하여 런타임에만 사용
-    - [ ] GE-01-4. 소스코드, DB, 파일(local.properties 등) 어디에도 키가 포함되지 않았는지 확인
-    - [ ] GE-01-5. 입력된 키로 Gemini API 호출 성공 여부 확인 (연동 테스트)
+  - [/] GE-01. Gemini API 키 발급 및 연동 확인
+    - [-] GE-01-1. Google AI Studio 또는 Google Cloud Console에서 API 키 발급 (사용자 직접 발급 필요)
+    - [x] GE-01-2. 앱 최초 실행 시 사용자가 직접 API 키를 입력하는 UI 구현 (SCR-08)
+    - [x] GE-01-3. 입력된 키는 Android Keystore를 통해 암호화하여 런타임에만 사용 (ApiKeyManager.kt)
+    - [x] GE-01-4. 소스코드, DB, 파일(local.properties 등) 어디에도 키가 포함되지 않았는지 확인
+    - [-] GE-01-5. 입력된 키로 Gemini API 호출 성공 여부 확인 (더미 모드로 대체)
   - [ ] GE-02. Gemini API 단순 텍스트 요청/응답 테스트 (Hello World 수준)
   - [ ] GE-03. 기억 보정용 시스템 프롬프트 설계 (확실/추측 구분 응답 형식 정의)
   - [ ] GE-04. 입력 파싱 인터페이스 정의 (사용자 원문 + 확신도 마킹 정보 → 요청 구조체)

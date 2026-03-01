@@ -85,3 +85,18 @@
   - 이력 목록 화면(SCR-06) 표시용 샘플 이력 15건
 - `todolist.md` SD-01~05 완료([x]) 처리
 
+## 2026-03-01T11:00:00+09:00
+
+**작업 내용**: GE-01-2~4 API 키 입력 UI + Keystore 암호화 구현
+
+- `ApiKeyManager.kt` 신규 생성
+  - Android Keystore AES/GCM 암호화로 Gemini API 키 저장/로드
+  - `saveApiKey`, `loadApiKey`, `hasApiKey`, `clearApiKey` API 제공
+  - 소스코드·파일·DB에 평문 키 미저장 구조
+- `Screens.kt` — `ApiKeySetupScreen(SCR-08)` 추가
+  - 최초 실행 시 API 키 입력 UI (PasswordVisualTransformation)
+  - 더미 모드로 시작 버튼 (FakeGugeoEngine 대응)
+- `NavGraph.kt` — `API_KEY_SETUP` 라우트 추가, 키 유무에 따라 시작 화면 분기
+- 소스코드 내 평문 API 키 미포함 검증 완료 (grep 확인)
+- `todolist.md` GE-01-2~4 완료([x]) 처리
+
