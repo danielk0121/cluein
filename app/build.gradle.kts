@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "dev.danielk.cluein"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "dev.danielk.cluein"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
