@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 
@@ -87,7 +88,6 @@ fun ApiKeySetupScreen(navController: NavHostController) {
 
             OutlinedButton(
                 onClick = {
-                    // 더미 모드: 키 없이 FakeGugeoEngine으로 진행
                     ApiKeyManager.saveApiKey(context, "FAKE_KEY")
                     navController.navigate(Routes.HOME) {
                         popUpTo(Routes.API_KEY_SETUP) { inclusive = true }
@@ -105,7 +105,7 @@ fun ApiKeySetupScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, vm: GugeoViewModel) {
     var inputText by remember { mutableStateOf("") }
     val recentHistory = DummyData.history.take(3)
 
@@ -140,7 +140,10 @@ fun HomeScreen(navController: NavHostController) {
             )
 
             OutlinedButton(
-                onClick = { navController.navigate(Routes.MARKING) },
+                onClick = {
+                    vm.setInputText(inputText)
+                    navController.navigate(Routes.MARKING)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = inputText.isNotBlank()
             ) {
@@ -148,14 +151,17 @@ fun HomeScreen(navController: NavHostController) {
             }
 
             Button(
-                onClick = { navController.navigate(Routes.LOADING) },
+                onClick = {
+                    vm.correct(GugeoRequest(inputText))
+                    navController.navigate(Routes.LOADING)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = inputText.isNotBlank()
             ) {
                 Text("기억 보정 시작")
             }
 
-            Divider()
+            HorizontalDivider()
             Text("최근 이력", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
 
             recentHistory.forEach { item ->
@@ -178,9 +184,9 @@ fun HomeScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MarkingScreen(navController: NavHostController) {
-    val sampleText = "사막에서 캡슐 기차 타는 뉴스, 2005년이었나?"
-    val markings = listOf(ConfidenceMarking(20, 25, "2005년"))
+fun MarkingScreen(navController: NavHostController, vm: GugeoViewModel) {
+    val inputText by vm.inputText.collectAsStateWithLifecycle()
+    val markings by vm.markings.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -192,9 +198,10 @@ fun MarkingScreen(navController: NavHostController) {
                     }
                 },
                 actions = {
-                    TextButton(onClick = { navController.navigate(Routes.LOADING) }) {
-                        Text("다음")
-                    }
+                    TextButton(onClick = {
+                        vm.correct(GugeoRequest(inputText, markings))
+                        navController.navigate(Routes.LOADING)
+                    }) { Text("다음") }
                 }
             )
         }
@@ -210,13 +217,17 @@ fun MarkingScreen(navController: NavHostController) {
 
             Card(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = sampleText,
+                    text = inputText.ifBlank { "사막에서 캡슐 기차 타는 뉴스, 2005년이었나?" },
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
 
             Text("마킹된 항목:", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+
+            if (markings.isEmpty()) {
+                Text("마킹된 항목이 없습니다. (더미: \"2005년\" 자동 마킹)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
+            }
 
             markings.forEach { marking ->
                 Card(modifier = Modifier.fillMaxWidth()) {
@@ -234,7 +245,10 @@ fun MarkingScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = { navController.navigate(Routes.LOADING) },
+                onClick = {
+                    vm.correct(GugeoRequest(inputText, markings))
+                    navController.navigate(Routes.LOADING)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("마킹 완료 → 보정 시작")
@@ -247,18 +261,23 @@ fun MarkingScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoadingScreen(navController: NavHostController) {
+fun LoadingScreen(navController: NavHostController, vm: GugeoViewModel) {
     val messages = listOf("기억을 분석하고 있습니다...", "단서를 조합 중입니다.", "거의 다 왔어요!")
     var messageIndex by remember { mutableIntStateOf(0) }
+    val state by vm.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         repeat(messages.size - 1) { i ->
-            delay(1000L)
+            delay(800L)
             messageIndex = i + 1
         }
-        delay(1000L)
-        navController.navigate(Routes.RESULT) {
-            popUpTo(Routes.LOADING) { inclusive = true }
+    }
+
+    LaunchedEffect(state) {
+        if (state is CorrectionState.Success || state is CorrectionState.Error) {
+            navController.navigate(Routes.RESULT) {
+                popUpTo(Routes.LOADING) { inclusive = true }
+            }
         }
     }
 
@@ -286,8 +305,12 @@ fun LoadingScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResultScreen(navController: NavHostController) {
-    val result = DummyData.results[0]
+fun ResultScreen(navController: NavHostController, vm: GugeoViewModel) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val result = when (val s = state) {
+        is CorrectionState.Success -> s.result
+        else -> DummyData.results[0]
+    }
 
     Scaffold(
         topBar = {
@@ -309,15 +332,19 @@ fun ResultScreen(navController: NavHostController) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            if (state is CorrectionState.Error) {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                    Text(
+                        "오류: ${(state as CorrectionState.Error).message}",
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
+            }
+
             CorrectionCard(label = "입력하신 기억", text = result.originalText)
 
-            Icon(
-                Icons.Default.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .size(24.dp)
-            )
+            Text("↓", modifier = Modifier.align(Alignment.CenterHorizontally), style = MaterialTheme.typography.titleLarge)
 
             CorrectionCard(
                 label = "보정된 사실",
@@ -341,8 +368,12 @@ fun ResultScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SourcesScreen(navController: NavHostController) {
-    val sources = DummyData.results[0].sources
+fun SourcesScreen(navController: NavHostController, vm: GugeoViewModel) {
+    val state by vm.state.collectAsStateWithLifecycle()
+    val sources = when (val s = state) {
+        is CorrectionState.Success -> s.result.sources
+        else -> DummyData.results[0].sources
+    }
 
     Scaffold(
         topBar = {
@@ -424,7 +455,7 @@ fun HistoryScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryDetailScreen(navController: NavHostController, historyId: String) {
+fun HistoryDetailScreen(navController: NavHostController, historyId: String, vm: GugeoViewModel) {
     val item = DummyData.history.find { it.id == historyId } ?: DummyData.history.first()
 
     Scaffold(
@@ -453,7 +484,10 @@ fun HistoryDetailScreen(navController: NavHostController, historyId: String) {
             CorrectionCard(label = "보정 결과", text = "${item.full.correctedText}\n(확률 ${item.full.probability}%)")
 
             Button(
-                onClick = { navController.navigate(Routes.SOURCES) },
+                onClick = {
+                    vm.setResultFromHistory(item.full)
+                    navController.navigate(Routes.SOURCES)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("출처 / 근거 보기")

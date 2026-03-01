@@ -1,8 +1,8 @@
 package dev.danielk.cluein
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,32 +24,33 @@ object Routes {
 fun ClueinNavGraph(navController: NavHostController = rememberNavController()) {
     val context = LocalContext.current
     val startDest = if (ApiKeyManager.hasApiKey(context)) Routes.HOME else Routes.API_KEY_SETUP
+    val gugeoViewModel: GugeoViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = startDest) {
         composable(Routes.API_KEY_SETUP) {
             ApiKeySetupScreen(navController)
         }
         composable(Routes.HOME) {
-            HomeScreen(navController)
+            HomeScreen(navController, gugeoViewModel)
         }
         composable(Routes.MARKING) {
-            MarkingScreen(navController)
+            MarkingScreen(navController, gugeoViewModel)
         }
         composable(Routes.LOADING) {
-            LoadingScreen(navController)
+            LoadingScreen(navController, gugeoViewModel)
         }
         composable(Routes.RESULT) {
-            ResultScreen(navController)
+            ResultScreen(navController, gugeoViewModel)
         }
         composable(Routes.SOURCES) {
-            SourcesScreen(navController)
+            SourcesScreen(navController, gugeoViewModel)
         }
         composable(Routes.HISTORY) {
             HistoryScreen(navController)
         }
         composable(Routes.HISTORY_DETAIL) { backStackEntry ->
             val historyId = backStackEntry.arguments?.getString("historyId") ?: ""
-            HistoryDetailScreen(navController, historyId)
+            HistoryDetailScreen(navController, historyId, gugeoViewModel)
         }
     }
 }

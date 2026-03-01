@@ -47,11 +47,11 @@
   - [x] GE-03. 기억 보정용 시스템 프롬프트 설계 → `.ai/assets/system_prompt.md`
   - [x] GE-04. 입력 파싱 인터페이스 정의 (GugeoRequest) → `GugeoEngine.kt`
   - [x] GE-05. 응답 파싱 인터페이스 정의 (GugeoResponse, GugeoEngine) → `GugeoEngine.kt`
-  - [ ] GE-06. 더미 API 응답 구현 (FakeGugeoEngine)
-    - [ ] GE-06-1. GE-05 응답 구조체를 만족하는 더미 응답 데이터 3종 작성 (뉴스/영화/만델라 각 시나리오)
-    - [ ] GE-06-2. FakeGugeoEngine 클래스 구현 — 실제 API 호출 없이 더미 데이터 반환
-    - [ ] GE-06-3. FakeGugeoEngine 으로 SCR-04 보정 결과 화면 UI 연동 및 렌더링 확인
-    - [ ] GE-06-4. FakeGugeoEngine 으로 SCR-05 출처/근거 화면 UI 연동 및 렌더링 확인
+  - [x] GE-06. 더미 API 응답 구현 (FakeGugeoEngine)
+    - [x] GE-06-1. GE-05 응답 구조체를 만족하는 더미 응답 데이터 3종 작성 (뉴스/영화/만델라 각 시나리오)
+    - [x] GE-06-2. FakeGugeoEngine 클래스 구현 — 키워드 매칭으로 더미 데이터 반환
+    - [x] GE-06-3. FakeGugeoEngine → GugeoViewModel → SCR-04 보정 결과 화면 연동
+    - [x] GE-06-4. FakeGugeoEngine → GugeoViewModel → SCR-05 출처/근거 화면 연동
   - [ ] GE-07. Android 프로젝트에 Gemini SDK(google-generativeai) 의존성 추가
   - [ ] GE-08. GugeoEngine 클래스 구현 및 Gemini API 호출 연동 (FakeGugeoEngine 교체)
   - [ ] GE-09. 실제 시나리오(뉴스/영화/만델라)로 엔드투엔드 연동 테스트

@@ -112,3 +112,25 @@
   - `GugeoEngine` interface: `suspend fun correct(request)` 정의
 - `todolist.md` GE-03~05 완료([x]) 처리
 
+## 2026-03-01T11:30:00+09:00
+
+**작업 내용**: GE-06 FakeGugeoEngine 구현 및 SCR-04/05 UI 연동
+
+- `FakeGugeoEngine.kt` 신규 생성 (GE-06-1~2)
+  - 뉴스(하이퍼루프)/영화(가타카)/만델라(피카츄) 3종 더미 응답 데이터
+  - 키워드 매칭으로 시나리오 분기, 2초 delay로 실제 API 시뮬레이션
+- `GugeoViewModel.kt` 신규 생성
+  - `CorrectionState` sealed class (Idle/Loading/Success/Error)
+  - inputText, markings StateFlow 상태 관리
+  - `correct()`, `setInputText()`, `setResultFromHistory()` API
+- `Screens.kt` GugeoViewModel 연동 (GE-06-3~4)
+  - HomeScreen: 입력 텍스트 → vm.correct() → LOADING 이동
+  - MarkingScreen: vm.inputText/markings 상태 표시
+  - LoadingScreen: CorrectionState 변화 감지 → RESULT 자동 이동
+  - ResultScreen: CorrectionState.Success 결과 표시
+  - SourcesScreen: Success 결과의 sources 표시
+  - HistoryDetailScreen: setResultFromHistory() → SOURCES 연동
+- `NavGraph.kt`: GugeoViewModel 전달 구조로 업데이트
+- assembleDebug 빌드 성공
+- `todolist.md` GE-06 완료([x]) 처리
+
