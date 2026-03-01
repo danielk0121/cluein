@@ -100,3 +100,15 @@
 - 소스코드 내 평문 API 키 미포함 검증 완료 (grep 확인)
 - `todolist.md` GE-01-2~4 완료([x]) 처리
 
+## 2026-03-01T11:15:00+09:00
+
+**작업 내용**: GE-03~05 시스템 프롬프트 + 입출력 파싱 인터페이스 설계
+
+- `.ai/assets/system_prompt.md` 생성 (GE-03)
+  - 역할 정의, JSON 응답 형식, type 값 규칙(NEWS/VIDEO/GUESS), 응답 규칙 6가지
+- `GugeoEngine.kt` 신규 생성 (GE-04, GE-05)
+  - `GugeoRequest`: 사용자 원문 + 확신도 마킹 목록 → 요청 구조체
+  - `GugeoResponse`: 보정 결과 + 확률 + 출처 → 응답 구조체, `toCorrectionResult()` 변환 제공
+  - `GugeoEngine` interface: `suspend fun correct(request)` 정의
+- `todolist.md` GE-03~05 완료([x]) 처리
+

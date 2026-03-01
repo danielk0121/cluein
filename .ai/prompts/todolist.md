@@ -43,10 +43,10 @@
     - [x] GE-01-3. 입력된 키는 Android Keystore를 통해 암호화하여 런타임에만 사용 (ApiKeyManager.kt)
     - [x] GE-01-4. 소스코드, DB, 파일(local.properties 등) 어디에도 키가 포함되지 않았는지 확인
     - [-] GE-01-5. 입력된 키로 Gemini API 호출 성공 여부 확인 (더미 모드로 대체)
-  - [ ] GE-02. Gemini API 단순 텍스트 요청/응답 테스트 (Hello World 수준)
-  - [ ] GE-03. 기억 보정용 시스템 프롬프트 설계 (확실/추측 구분 응답 형식 정의)
-  - [ ] GE-04. 입력 파싱 인터페이스 정의 (사용자 원문 + 확신도 마킹 정보 → 요청 구조체)
-  - [ ] GE-05. 응답 파싱 인터페이스 정의 (보정 결과 + 확률 + 출처 → 응답 구조체)
+  - [-] GE-02. Gemini API 단순 텍스트 요청/응답 테스트 (더미 모드로 대체)
+  - [x] GE-03. 기억 보정용 시스템 프롬프트 설계 → `.ai/assets/system_prompt.md`
+  - [x] GE-04. 입력 파싱 인터페이스 정의 (GugeoRequest) → `GugeoEngine.kt`
+  - [x] GE-05. 응답 파싱 인터페이스 정의 (GugeoResponse, GugeoEngine) → `GugeoEngine.kt`
   - [ ] GE-06. 더미 API 응답 구현 (FakeGugeoEngine)
     - [ ] GE-06-1. GE-05 응답 구조체를 만족하는 더미 응답 데이터 3종 작성 (뉴스/영화/만델라 각 시나리오)
     - [ ] GE-06-2. FakeGugeoEngine 클래스 구현 — 실제 API 호출 없이 더미 데이터 반환
