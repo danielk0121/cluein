@@ -44,5 +44,8 @@
   3. replace 도구로 하단에 새 일지 추가
   4. git add 및 commit 실행 (사용자에게 묻지 않고 즉시 수행)
 
-
+## claude 와 commit 명령어
+- AI LLM 이 claude 인 경우 `claude --dangerously-skip-permissions` 로 실행해야지 commit 이 자동 실행 된다
+  - claude 를 일반 모드로 실행하면 .claude/MEMORY.md 파일, CLAUDE.md 에 명시해도 commit 은 사용자 입력을 요구한다 (2026.03 확인)
+- gemini 는 PROMPT.md 지침으로 commit 을 자동 수행함을 확인했음
 
